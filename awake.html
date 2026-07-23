@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>零界·Awake·链上提币·Polygon</title>
+  <link data-n-head="1" rel="icon" type="image/x-icon" href="https://originworld.org/favicon.ico">
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================================
+       🚀 NEXT-GEN TECH UI — 零界 · Awake
+       设计理念：明亮通透 · 流光溢彩 · 宏大震撼
+       ============================================================ */
+
+    :root {
+      /* 明亮科技色板 */
+      --bg-deep: #0a1628;
+      --bg-mid: #122040;
+      --bg-card: rgba(18, 32, 64, 0.72);
+      --bg-card-hover: rgba(25, 42, 80, 0.85);
+
+      /* 核心霓虹色 */
+      --cyan: #00e5ff;
+      --cyan-bright: #5ef0ff;
+      --cyan-soft: rgba(0, 229, 255, .18);
+      --cyan-glow: rgba(0, 229, 255, .45);
+
+      --violet: #a855f7;
+      --violet-bright: #c084fc;
+      --violet-soft: rgba(168, 85, 247, .18);
+
+      --pink: #ec4899;
+      --pink-soft: rgba(236, 72, 153, .15);
+
+      --green: #34d399;
+      --green-bright: #6ee7b7;
+      --green-soft: rgba(52, 211, 153, .15);
+
+      --gold: #fbbf24;
+      --gold-soft: rgba(251, 191, 36, .15);
+
+      --red: #f43f5e;
+      --red-soft: rgba(244, 63, 94, .15);
+
+      --orange: #fb923c;
+
+      /* 文字 */
+      --text-1: #f1f5f9;
+      --text-2: rgba(241, 245, 249, .68);
+      --text-3: rgba(241, 245, 249, .42);
+
+      /* 边框 */
+      --border-1: rgba(0, 229, 255, .18);
+      --border-2: rgba(168, 85, 247, .15);
+      --border-strong: rgba(0, 229, 255, .35);
+
+      /* 字体 */
+      --font-display: 'Orbitron', 'Inter', sans-serif;
+      --font-body: 'Inter', 'Segoe UI', 'PingFang SC', sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box }
+
+    /* ===== 主体背景：明亮星空渐变 ===== */
+    body {
+      font-family: var(--font-body);
+      background:
+        radial-gradient(ellipse 1200px 800px at 20% 10%, rgba(0,229,255,.12), transparent 60%),
+        radial-gradient(ellipse 1000px 600px at 85% 20%, rgba(168,85,247,.10), transparent 55%),
+        radial-gradient(ellipse 800px 500px at 50% 90%, rgba(0,180,255,.08), transparent 50%),
+        linear-gradient(160deg, #0c1a35 0%, #122448 30%, #1a2d5a 60%, #162247 100%);
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      color: var(--text-1);
+      padding: 20px 10px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ===== 动态星空粒子背景 ===== */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,.4), transparent),
+        radial-gradient(1px 1px at 30% 60%, rgba(0,229,255,.5), transparent),
+        radial-gradient(1.5px 1.5px at 50% 10%, rgba(255,255,255,.3), transparent),
+        radial-gradient(1px 1px at 70% 40%, rgba(168,85,247,.5), transparent),
+        radial-gradient(1px 1px at 90% 80%, rgba(255,255,255,.35), transparent),
+        radial-gradient(1.5px 1.5px at 15% 85%, rgba(0,229,255,.4), transparent),
+        radial-gradient(1px 1px at 55% 75%, rgba(255,255,255,.25), transparent),
+        radial-gradient(1px 1px at 80% 15%, rgba(168,85,247,.4), transparent),
+        radial-gradient(1px 1px at 40% 35%, rgba(255,255,255,.3), transparent),
+        radial-gradient(1.5px 1.5px at 95% 50%, rgba(0,229,255,.35), transparent),
+        radial-gradient(1px 1px at 5% 55%, rgba(255,255,255,.2), transparent),
+        radial-gradient(1px 1px at 65% 90%, rgba(168,85,247,.3), transparent);
+      z-index: 0;
+      pointer-events: none;
+      animation: twinkle 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes twinkle {
+      0%   { opacity: .6; }
+      100% { opacity: 1; }
+    }
+
+    /* ===== 流动光带 ===== */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        linear-gradient(105deg, transparent 40%, rgba(0,229,255,.03) 50%, transparent 60%),
+        linear-gradient(250deg, transparent 35%, rgba(168,85,247,.03) 50%, transparent 65%);
+      background-size: 200% 100%, 200% 100%;
+      z-index: 0;
+      pointer-events: none;
+      animation: aurora 15s ease infinite;
+    }
+
+    @keyframes aurora {
+      0%, 100% { background-position: 0% 50%, 100% 50%; }
+      50%      { background-position: 100% 50%, 0% 50%; }
+    }
+
+    /* ===== 主容器：玻璃拟态 ===== */
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 540px;
+      max-width: 100%;
+      background: var(--bg-card);
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      border-radius: 24px;
+      padding: 40px 34px;
+      border: 1px solid var(--border-1);
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, .35),
+        0 0 80px rgba(0, 229, 255, .06),
+        inset 0 1px 0 rgba(255, 255, 255, .06),
+        inset 0 0 40px rgba(0, 229, 255, .02);
+    }
+
+    /* 容器顶部流光边 */
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 24px; right: 24px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), var(--violet), var(--cyan), transparent);
+      border-radius: 2px;
+      animation: flowLine 3s linear infinite;
+    }
+
+    @keyframes flowLine {
+      0%   { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    /* 容器四角光晕 */
+    .container::after {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: 25px;
+      background: linear-gradient(135deg, rgba(0,229,255,.15), transparent 30%, transparent 70%, rgba(168,85,247,.12));
+      z-index: -1;
+      opacity: .6;
+    }
+
+    /* ===== Header ===== */
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+      position: relative;
+    }
+
+    .header-badge {
+      display: inline-block;
+      padding: 4px 14px;
+      background: linear-gradient(90deg, var(--cyan-soft), var(--violet-soft));
+      border: 1px solid var(--border-1);
+      border-radius: 20px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--cyan);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      text-shadow: 0 0 8px var(--cyan-glow);
+    }
+
+    .header h1 {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      background: linear-gradient(135deg, #ffffff 0%, var(--cyan-bright) 40%, var(--violet-bright) 80%, #ffffff 100%);
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 5s ease infinite;
+      text-transform: uppercase;
+      line-height: 1.3;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { background-position: 0% 50%; }
+      50%      { background-position: 100% 50%; }
+    }
+
+    .header p {
+      font-size: 13px;
+      color: var(--text-3);
+      margin-top: 8px;
+      letter-spacing: 1.5px;
+      font-family: var(--font-mono);
+      font-weight: 400;
+    }
+
+    .header p .arrow {
+      color: var(--cyan);
+      margin: 0 6px;
+      text-shadow: 0 0 6px var(--cyan-glow);
+    }
+
+    /* ===== 进度步骤条 ===== */
+    .progress-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 28px;
+      padding: 0 10px;
+    }
+
+    .progress-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      flex: 0 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .progress-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      background: rgba(18, 32, 64, .9);
+      border: 2px solid rgba(255,255,255,.12);
+      color: var(--text-3);
+      transition: all .4s ease;
+    }
+
+    .progress-step.active .progress-circle {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      box-shadow: 0 0 16px var(--cyan-glow), inset 0 0 8px rgba(0,229,255,.15);
+      text-shadow: 0 0 6px var(--cyan-glow);
+    }
+
+    .progress-step.done .progress-circle {
+      border-color: var(--green);
+      color: var(--green);
+      background: rgba(52,211,153,.1);
+      box-shadow: 0 0 12px rgba(52,211,153,.3);
+    }
+
+    .progress-step.done .progress-circle::after {
+      content: '✓';
+      font-size: 16px;
+    }
+
+    .progress-step.done .progress-circle span { display: none; }
+
+    .progress-label {
+      font-size: 10px;
+      color: var(--text-3);
+      font-family: var(--font-mono);
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    .progress-step.active .progress-label { color: var(--cyan); }
+    .progress-step.done .progress-label { color: var(--green); }
+
+    .progress-line {
+      width: 50px;
+      height: 2px;
+      background: rgba(255,255,255,.1);
+      margin-bottom: 20px;
+      border-radius: 1px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-line::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, var(--green), var(--cyan));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .5s ease;
+    }
+
+    .progress-line.filled::after { transform: scaleX(1); }
+
+    /* ===== 状态栏 ===== */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 24px;
+      padding: 14px 18px;
+      background: linear-gradient(135deg, rgba(0,229,255,.05), rgba(168,85,247,.04));
+      border: 1px solid var(--border-1);
+      border-radius: 14px;
+      flex-wrap: wrap;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .status-bar::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: linear-gradient(180deg, var(--cyan), var(--violet));
+      box-shadow: 0 0 10px var(--cyan-glow);
+    }
+
+    .status-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      min-width: 10px;
+      border-radius: 50%;
+      background: var(--red);
+      box-shadow: 0 0 10px var(--red), 0 0 20px rgba(244,63,94,.3);
+      animation: dotPulse 2s ease infinite;
+    }
+
+    .status-dot.connected {
+      background: var(--green);
+      box-shadow: 0 0 10px var(--green), 0 0 20px rgba(52,211,153,.3);
+    }
+
+    @keyframes dotPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: .55; transform: scale(.82); }
+    }
+
+    #statusText {
+      font-size: 13px;
+      color: var(--text-2);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: var(--font-mono);
+      letter-spacing: .5px;
+    }
+
+    /* ===== Tab 栏 ===== */
+    .tab-bar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 28px;
+      padding: 5px;
+      background: rgba(0, 0, 0, .25);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 14px;
+      position: relative;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 11px 8px;
+      border: none;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--text-3);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--font-display);
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all .35s ease;
+      text-align: center;
+      line-height: 1.3;
+      text-transform: uppercase;
+      position: relative;
+    }
+
+    .tab-btn:hover:not(:disabled) {
+      color: var(--cyan-bright);
+      background: rgba(0,229,255,.06);
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(0,229,255,.18), rgba(168,85,247,.15));
+      color: var(--cyan);
+      border: 1px solid var(--border-strong);
+      box-shadow:
+        0 0 20px rgba(0,229,255,.12),
+        inset 0 0 16px rgba(0,229,255,.06);
+      text-shadow: 0 0 8px var(--cyan-glow);
+    }
+
+    .tab-btn.done {
+      color: var(--green);
+    }
+
+    .tab-btn.done::after {
+      content: ' ✓';
+      color: var(--green);
+      text-shadow: 0 0 6px rgba(52,211,153,.5);
+    }
+
+    .tab-btn:disabled {
+      opacity: .22;
+      cursor: not-allowed;
+    }
+
+    /* ===== Tab 内容 ===== */
+    .tab-content {
+      display: none;
+      animation: slideFade .4s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    .tab-content.active { display: block; }
+
+    @keyframes slideFade {
+      from { opacity: 0; transform: translateY(16px); filter: blur(6px); }
+      to   { opacity: 1; transform: translateY(0);  filter: blur(0); }
+    }
+
+    /* ===== 区块标题 ===== */
+    .section-tit {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--cyan);
+      margin: 18px 0 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(0,229,255,.12);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-tit .icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px; height: 22px;
+      background: var(--cyan-soft);
+      border: 1px solid var(--border-1);
+      border-radius: 6px;
+      font-size: 11px;
+    }
+
+    /* ===== 信息卡片 ===== */
+    .info-card {
+      background: rgba(0, 0, 0, .2);
+      border-radius: 14px;
+      padding: 14px 18px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(255,255,255,.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .info-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, var(--cyan), var(--violet));
+      border-radius: 14px 0 0 14px;
+      opacity: .7;
+    }
+
+    .info-card:hover {
+      border-color: rgba(0,229,255,.12);
+      background: rgba(0,0,0,.15);
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+    }
+
+    .info-row:last-child { border: none; }
+
+    .info-label {
+      font-size: 12px;
+      color: var(--text-3);
+      letter-spacing: .5px;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+    }
+
+    .info-value {
+      font-size: 13px;
+      font-family: var(--font-mono);
+      color: var(--text-2);
+      max-width: 240px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ===== 余额行 ===== */
+    .bal-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 18px;
+      background: rgba(0, 0, 0, .22);
+      border: 1px solid rgba(255,255,255,.05);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      font-size: 14px;
+      transition: all .25s;
+    }
+
+    .bal-section:hover {
+      border-color: rgba(0,229,255,.12);
+    }
+
+    .bal-section .label {
+      font-size: 12px;
+      color: var(--text-3);
+      font-family: var(--font-mono);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .bal-val {
+      color: var(--gold);
+      font-weight: 700;
+      font-family: var(--font-mono);
+      text-shadow: 0 0 10px rgba(251,191,36,.35);
+      font-size: 15px;
+    }
+
+    /* ===== 价格区域 ===== */
+    .price-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 18px;
+      background: linear-gradient(135deg, rgba(52,211,153,.06), rgba(0,229,255,.03));
+      border: 1px solid rgba(52,211,153,.2);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .price-section::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 50%;
+      width: 3px; height: 60%;
+      transform: translateY(-50%);
+      background: var(--green);
+      box-shadow: 0 0 8px rgba(52,211,153,.5);
+      border-radius: 0 2px 2px 0;
+    }
+
+    .price-label {
+      font-size: 13px;
+      color: var(--text-2);
+      font-family: var(--font-mono);
+      letter-spacing: .5px;
+    }
+
+    .price-val {
+      color: var(--green-bright);
+      font-weight: 700;
+      font-size: 16px;
+      font-family: var(--font-mono);
+      text-shadow: 0 0 10px rgba(52,211,153,.35);
+    }
+
+    /* ===== 输入框 ===== */
+    .input-wrap {
+      position: relative;
+      margin-bottom: 12px;
+    }
+
+    .input-wrap::before {
+      content: attr(data-label);
+      position: absolute;
+      top: -7px;
+      left: 14px;
+      background: var(--bg-deep);
+      padding: 0 6px;
+      font-size: 10px;
+      color: var(--cyan);
+      font-family: var(--font-mono);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      z-index: 1;
+    }
+
+    input[type=number] {
+      width: 100%;
+      padding: 16px 18px 14px;
+      background: rgba(0, 0, 0, .28);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 16px;
+      font-family: var(--font-mono);
+      font-weight: 500;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      transition: all .3s;
+      letter-spacing: .5px;
+    }
+
+    input[type=number]::placeholder {
+      color: var(--text-3);
+      font-family: var(--font-body);
+      font-size: 14px;
+    }
+
+    input[type=number]:focus {
+      border-color: var(--cyan);
+      box-shadow:
+        0 0 0 3px rgba(0,229,255,.1),
+        0 0 24px rgba(0,229,255,.12),
+        inset 0 0 12px rgba(0,229,255,.04);
+      background: rgba(0,229,255,.03);
+    }
+
+    /* ===== 按钮系统 ===== */
+    .btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: var(--font-display);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-bottom: 12px;
+      transition: all .3s cubic-bezier(.4, 0, .2, 1);
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 按钮光泽扫过 */
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -120%;
+      width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
+      transform: skewX(-20deg);
+      transition: left .6s ease;
+    }
+
+    .btn:hover::before { left: 130%; }
+
+    /* Primary — 青紫渐变 */
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(0,229,255,.22), rgba(168,85,247,.20));
+      color: var(--cyan);
+      border: 1px solid var(--border-strong);
+      box-shadow:
+        0 4px 20px rgba(0,229,255,.1),
+        inset 0 1px 0 rgba(255,255,255,.06),
+        inset 0 0 20px rgba(0,229,255,.04);
+      text-shadow: 0 0 10px var(--cyan-glow);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: linear-gradient(135deg, rgba(0,229,255,.32), rgba(168,85,247,.28));
+      box-shadow:
+        0 6px 30px rgba(0,229,255,.2),
+        inset 0 1px 0 rgba(255,255,255,.1),
+        0 0 40px rgba(0,229,255,.08);
+      transform: translateY(-2px);
+      color: #fff;
+    }
+
+    .btn-primary:disabled {
+      opacity: .3;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Danger — 粉橙渐变 */
+    .btn-danger {
+      background: linear-gradient(135deg, rgba(236,72,153,.25), rgba(251,146,60,.20));
+      color: #fff;
+      border: 1px solid rgba(236,72,153,.4);
+      box-shadow:
+        0 4px 20px rgba(236,72,153,.12),
+        inset 0 1px 0 rgba(255,255,255,.06),
+        inset 0 0 20px rgba(236,72,153,.04);
+      text-shadow: 0 0 10px rgba(255,255,255,.3);
+    }
+
+    .btn-danger:hover:not(:disabled) {
+      background: linear-gradient(135deg, rgba(236,72,153,.35), rgba(251,146,60,.28));
+      box-shadow:
+        0 6px 30px rgba(236,72,153,.22),
+        inset 0 1px 0 rgba(255,255,255,.12),
+        0 0 40px rgba(236,72,153,.08);
+      transform: translateY(-2px);
+    }
+
+    /* Secondary */
+    .btn-secondary {
+      background: rgba(255,255,255,.04);
+      color: var(--text-2);
+      border: 1px solid rgba(255,255,255,.08);
+      font-size: 12px;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,.08);
+      color: var(--text-1);
+      border-color: rgba(255,255,255,.15);
+    }
+
+    /* Connect */
+    .btn-connect {
+      width: auto;
+      padding: 9px 22px;
+      font-size: 13px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      background: linear-gradient(135deg, rgba(0,229,255,.25), rgba(168,85,247,.22));
+      color: var(--cyan);
+      border: 1px solid var(--border-strong);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all .3s;
+      white-space: nowrap;
+      text-shadow: 0 0 8px var(--cyan-glow);
+      box-shadow: 0 0 16px rgba(0,229,255,.1);
+    }
+
+    .btn-connect:hover:not(:disabled) {
+      box-shadow: 0 0 28px rgba(0,229,255,.25);
+      transform: translateY(-1px);
+      color: #fff;
+    }
+
+    .btn-connect:disabled { opacity: .3; cursor: not-allowed; }
+
+    /* Disconnect */
+    .btn-disconnect {
+      width: auto;
+      padding: 7px 14px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      background: var(--red-soft);
+      color: var(--red);
+      border: 1px solid rgba(244,63,94,.3);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all .25s;
+      white-space: nowrap;
+    }
+
+    .btn-disconnect:hover {
+      background: rgba(244,63,94,.2);
+      box-shadow: 0 0 14px rgba(244,63,94,.2);
+    }
+
+    /* ===== 交易状态 ===== */
+    .tx-status {
+      margin-top: 16px;
+      padding: 16px 18px;
+      border-radius: 14px;
+      font-size: 13px;
+      text-align: center;
+      white-space: pre-line;
+      word-break: break-word;
+      font-family: var(--font-mono);
+      letter-spacing: .5px;
+      line-height: 1.8;
+      border: 1px solid transparent;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tx-status::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+    }
+
+    .tx-status.pending {
+      background: linear-gradient(90deg, rgba(251,146,60,.08), rgba(251,191,36,.04));
+      color: var(--orange);
+      border-color: rgba(251,146,60,.25);
+    }
+    .tx-status.pending::before { background: var(--orange); box-shadow: 0 0 8px var(--orange); }
+
+    .tx-status.success {
+      background: linear-gradient(90deg, rgba(52,211,153,.08), rgba(0,229,255,.04));
+      color: var(--green-bright);
+      border-color: rgba(52,211,153,.25);
+    }
+    .tx-status.success::before { background: var(--green); box-shadow: 0 0 8px var(--green); }
+
+    .tx-status.error {
+      background: linear-gradient(90deg, rgba(244,63,94,.08), rgba(236,72,153,.04));
+      color: var(--red);
+      border-color: rgba(244,63,94,.25);
+    }
+    .tx-status.error::before { background: var(--red); box-shadow: 0 0 8px var(--red); }
+
+    /* ===== 向下箭头 ===== */
+    .down-arrow {
+      text-align: center;
+      font-size: 22px;
+      color: var(--cyan);
+      margin: -6px 0 6px;
+      text-shadow: 0 0 12px var(--cyan-glow);
+      animation: arrowBounce 1.2s ease infinite;
+    }
+
+    @keyframes arrowBounce {
+      0%, 100% { transform: translateY(0); opacity: .5; }
+      50%      { transform: translateY(5px); opacity: 1; }
+    }
+
+    /* ===== Check Result ===== */
+    .check-result {
+      margin-top: 12px;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      text-align: center;
+      font-family: var(--font-mono);
+      letter-spacing: .5px;
+      border: 1px solid;
+    }
+
+    .check-result.available {
+      background: rgba(52,211,153,.07);
+      color: var(--green-bright);
+      border-color: rgba(52,211,153,.22);
+      box-shadow: 0 0 20px rgba(52,211,153,.06);
+    }
+
+    .check-result.none {
+      background: rgba(255,255,255,.03);
+      color: var(--text-3);
+      border-color: rgba(255,255,255,.06);
+    }
+
+    .hidden { display: none; }
+
+    /* ============================================================
+       📱 MOBILE (< 600px)
+       ============================================================ */
+    @media (max-width: 600px) {
+      body {
+        padding: 0;
+        align-items: flex-start;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 100vw;
+        min-height: 100dvh;
+        border-radius: 0;
+        padding: 24px 16px;
+        padding-top: max(24px, env(safe-area-inset-top, 12px));
+        padding-bottom: max(20px, env(safe-area-inset-bottom, 12px));
+        border: none;
+        box-shadow: none;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .container::before { left: 16px; right: 16px; }
+      .container::after { display: none; }
+
+      .header h1 { font-size: 20px; letter-spacing: 2px; }
+      .header p { font-size: 12px; }
+      .header-badge { font-size: 9px; padding: 3px 10px; }
+
+      .progress-bar { margin-bottom: 22px; }
+      .progress-circle { width: 32px; height: 32px; font-size: 12px; }
+      .progress-line { width: 36px; }
+      .progress-label { font-size: 9px; }
+
+      .status-bar { padding: 10px 12px; gap: 8px; margin-bottom: 20px; }
+      #statusText { font-size: 12px; }
+      .status-dot { width: 9px; height: 9px; }
+
+      .tab-bar { gap: 4px; margin-bottom: 22px; padding: 4px; }
+      .tab-btn { padding: 10px 4px; font-size: 11px; border-radius: 8px; }
+
+      .section-tit { font-size: 12px; margin: 14px 0 10px; }
+
+      .info-card { padding: 12px 14px; margin-bottom: 14px; }
+      .info-label { font-size: 11px; }
+      .info-value { font-size: 12px; max-width: 170px; }
+
+      .bal-section { padding: 12px 14px; }
+      .bal-section .label { font-size: 11px; }
+      .bal-val { font-size: 14px; }
+
+      .price-section { padding: 12px 14px; }
+      .price-label { font-size: 12px; }
+      .price-val { font-size: 15px; }
+
+      .input-wrap { margin-bottom: 10px; }
+      input[type=number] {
+        padding: 16px 14px 13px;
+        font-size: 16px;
+        border-radius: 10px;
+      }
+
+      .btn {
+        padding: 16px 14px;
+        font-size: 13px;
+        border-radius: 12px;
+        margin-bottom: 10px;
+        min-height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .btn-connect { padding: 9px 16px; font-size: 12px; min-height: 36px; }
+      .btn-disconnect { padding: 6px 10px; font-size: 10px; }
+
+      .tx-status { font-size: 12px; padding: 12px; margin-top: 12px; }
+      .check-result { font-size: 12px; padding: 10px; }
+      .down-arrow { font-size: 18px; }
+
+      .container > .btn-secondary:last-of-type { margin-top: auto; }
+    }
+
+    /* ============================================================
+       📱 NARROW (< 380px)
+       ============================================================ */
+    @media (max-width: 380px) {
+      .container { padding: 18px 12px; }
+      .header h1 { font-size: 17px; }
+      .tab-btn { padding: 8px 2px; font-size: 10px; }
+      .info-value { max-width: 140px; }
+      .progress-line { width: 28px; }
+    }
+
+    /* ============================================================
+       🖥️ WIDE (≥ 900px)
+       ============================================================ */
+    @media (min-width: 900px) {
+      .container { width: 580px; padding: 44px 38px; }
+      .header h1 { font-size: 28px; }
+      .tab-btn { padding: 12px 10px; font-size: 13px; }
+      .progress-circle { width: 40px; height: 40px; font-size: 14px; }
+      .progress-line { width: 60px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="header-badge">⚡ Polygon Mainnet</div>
+      <h1>零界 · AWAKE · 链上提币</h1>
+      <p><span class="arrow">▶</span> Claim <span class="arrow">▶</span> Unstake <span class="arrow">▶</span> Swap <span class="arrow">▶</span></p>
+    </div>
+
+    <!-- 进度步骤条 -->
+    <div class="progress-bar">
+      <div class="progress-step active" id="pStep1">
+        <div class="progress-circle"><span>1</span></div>
+        <div class="progress-label">CLAIM</div>
+      </div>
+      <div class="progress-line" id="pLine1"></div>
+      <div class="progress-step" id="pStep2">
+        <div class="progress-circle"><span>2</span></div>
+        <div class="progress-label">UNSTAKE</div>
+      </div>
+      <div class="progress-line" id="pLine2"></div>
+      <div class="progress-step" id="pStep3">
+        <div class="progress-circle"><span>3</span></div>
+        <div class="progress-label">SWAP</div>
+      </div>
+    </div>
+
+    <!-- 状态栏 -->
+    <div class="status-bar">
+      <div class="status-left">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">未连接钱包 · 请切换到 Polygon</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
+        <button class="btn-connect" id="btnConnect" onclick="doConnect()">连接钱包</button>
+        <button class="btn-disconnect hidden" id="btnDisconnect" onclick="disconnect()">断开</button>
+      </div>
+    </div>
+
+    <!-- Tab 栏 -->
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tab1" onclick="switchTab(1)">领取 sLGNS</button>
+      <button class="tab-btn" id="tab2" onclick="switchTab(2)" disabled>赎回 LGNS</button>
+      <button class="tab-btn" id="tab3" onclick="switchTab(3)" disabled>兑换 DAI</button>
+    </div>
+
+    <!-- Tab1: Claim -->
+    <div class="tab-content active" id="content1">
+      <div class="section-tit"><span class="icon">🎁</span> Staking → sLGNS 领取（Claim）</div>
+      <div class="info-card">
+        <div class="info-row"><span class="info-label">// Staking 合约</span><span class="info-value">0x1964...1bfc</span></div>
+      </div>
+      <div class="bal-section"><span class="label">sLGNS 余额</span><span class="bal-val" id="balSLgns_">--</span></div>
+      <button class="btn btn-primary" id="btnCheckClaim" onclick="checkClaim()" disabled>🔍 检查可领取 sLGNS</button>
+      <div id="checkResult"></div>
+      <button class="btn btn-primary" id="btnClaim" onclick="doClaim()" disabled>🚀 执行 Claim</button>
+    </div>
+
+    <!-- Tab2: 赎回 LGNS -->
+    <div class="tab-content" id="content2">
+      <div class="section-tit"><span class="icon">🔓</span> sLGNS → LGNS 赎回（Unstake）</div>
+      <div class="info-card">
+        <div class="info-row"><span class="info-label">// Staking 合约</span><span class="info-value">0x1964...1bfc</span></div>
+      </div>
+      <div class="bal-section"><span class="label">sLGNS 余额</span><span class="bal-val" id="balSLgns">--</span></div>
+      <div class="input-wrap" data-label="赎回数量">
+        <input type="number" id="inpUnstake" placeholder="输入要赎回的 sLGNS 数量...">
+      </div>
+      <button class="btn btn-danger" id="btnUnstake" onclick="doUnstake()">🚀 sLGNS → LGNS 赎回</button>
+    </div>
+
+    <!-- Tab3: 兑换 DAI -->
+    <div class="tab-content" id="content3">
+      <div class="section-tit"><span class="icon">💱</span> LGNS → DAI 兑换（QuickSwap V2）</div>
+      <div class="info-card">
+        <div class="info-row"><span class="info-label">// Router 合约</span><span class="info-value">0xa5E0...78ff</span></div>
+      </div>
+      <div class="bal-section"><span class="label">LGNS 余额</span><span class="bal-val" id="balLgns">--</span></div>
+
+      <div class="price-section">
+        <span class="price-label">📊 LGNS 实时价格</span>
+        <span class="price-val" id="lgnsPrice">--</span>
+      </div>
+
+      <div class="input-wrap" data-label="兑换数量">
+        <input type="number" id="inpSwap" placeholder="输入要兑换的 LGNS 数量..." oninput="estimateSwap()">
+      </div>
+
+      <div class="down-arrow">▼ ▼ ▼</div>
+
+      <div class="bal-section">
+        <span class="label">预计收到 DAI</span>
+        <span class="bal-val" id="estDai" style="color:var(--green-bright); text-shadow: 0 0 10px rgba(52,211,153,.35);">--</span>
+      </div>
+
+      <button class="btn btn-danger" id="btnSwap" onclick="doSwap()">🚀 LGNS → DAI 兑换</button>
+    </div>
+
+    <!-- 交易状态 -->
+    <div id="txSt" class="tx-status"></div>
+
+    <!-- 重置按钮 -->
+    <button class="btn btn-secondary" onclick="location.reload()">🔄 重置全部</button>
+
+  </div>
+
+  <script>
+    /* ===== 配置 ===== */
+    const C = {
+      DAI: '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063',
+      LGNS: '0xeb51d9a39ad5eef215dc0bf39a8821ff804a0f01',
+      sLGNS: '0x99a57e6c8558bc6689f894e068733adf83c19725',
+      STAKING: '0x1964ca90474b11ffd08af387b110ba6c96251bfc',
+      Router: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff',
+      Pair: '0x882df4b0fb50a229c3b4124eb18c759911485bfb'
+    };
+    const POLYGON_CHAIN_ID = 137n;
+
+    /* ===== ABI ===== */
+    const ABI_LGNS = [
+      "function allowance(address,address) external view returns(uint256)"
+    ];
+    const ABI_STAKING = [
+      "function warmupInfo(address) external view returns (uint deposit, uint gons, uint expiry, bool lock)",
+      "function claim(address _recipient) external",
+      "function unstake(uint256,bool) external",
+      "function epoch() external view returns (uint length, uint number, uint endBlock, uint distribute)"
+    ];
+    const ABI_SWAP  = [
+      "function swapExactTokensForTokens(uint,uint,address[],address,uint) external returns(uint[])",
+      "function swapExactTokensForTokensSupportingFeeOnTransferTokens(uint,uint,address[],address,uint) external returns(uint[])",
+      "function getAmountsOut(uint,address[]) external view returns(uint[])",
+      "function approve(address,uint256) external returns(bool)",
+      "function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)",
+      "function token0() external view returns (address)",
+      "function token1() external view returns (address)"
+    ];
+    const ABI_ERC20 = [
+      "function balanceOf(address) external view returns(uint256)",
+      "function allowance(address,address) view returns (uint256)",
+      "function approve(address,uint256) returns (bool)"
+    ];
+
+    let provider, signer, addr;
+
+    /* ===== helpers ===== */
+    function st(t, m) { const e = document.getElementById('txSt'); e.className = 'tx-status ' + t; e.innerText = m }
+    function lock(id, v) { document.getElementById(id).disabled = v }
+    async function checkChain() { const n = await provider.getNetwork(); if (n.chainId !== POLYGON_CHAIN_ID) throw Error('请切换到 Polygon Mainnet（137）') }
+    async function refBal() {
+      try {
+        const bal = ethers.formatUnits(await (new ethers.Contract(C.sLGNS, ABI_ERC20, provider)).balanceOf(addr), 9);
+        document.getElementById('balSLgns_').innerText = bal;
+        document.getElementById('balSLgns').innerText = bal;
+        document.getElementById('balLgns').innerText = ethers.formatUnits(await (new ethers.Contract(C.LGNS, ABI_ERC20, provider)).balanceOf(addr), 9);
+      } catch (e) { }
+    }
+
+    /* ===== 进度条更新 ===== */
+    function updateProgress(activeIdx) {
+      for (let i = 1; i <= 3; i++) {
+        const step = document.getElementById('pStep' + i);
+        const line = document.getElementById('pLine' + (i - 1));
+        step.classList.remove('active', 'done');
+        if (i < activeIdx) step.classList.add('done');
+        if (i === activeIdx) step.classList.add('active');
+      }
+      // 连线填充
+      for (let i = 1; i <= 2; i++) {
+        const line = document.getElementById('pLine' + i);
+        if (activeIdx > i) line.classList.add('filled');
+        else line.classList.remove('filled');
+      }
+    }
+
+    function switchTab(n) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('content' + n).classList.add('active');
+      document.getElementById('tab' + n).classList.add('active');
+      updateProgress(n);
+    }
+
+    /* ===== LGNS 实时价格 ===== */
+    async function fetchLgnsPrice() {
+      try {
+        const pair = new ethers.Contract(C.Pair, ABI_SWAP, provider);
+        const [reserve0, reserve1] = await pair.getReserves();
+        const token0Addr = await pair.token0();
+        let lgnsReserve, daiReserve;
+        if (token0Addr.toLowerCase() === C.LGNS.toLowerCase()) {
+          lgnsReserve = reserve0; daiReserve = reserve1;
+        } else {
+          lgnsReserve = reserve1; daiReserve = reserve0;
+        }
+        const daiNorm = Number(ethers.formatUnits(daiReserve, 18));
+        const lgnsNorm = Number(ethers.formatUnits(lgnsReserve, 9));
+        const price = daiNorm / lgnsNorm;
+        document.getElementById('lgnsPrice').innerText = '$' + price.toFixed(4);
+        return price;
+      } catch (e) {
+        document.getElementById('lgnsPrice').innerText = '获取失败';
+        return null;
+      }
+    }
+
+    /* ===== 估算 DAI ===== */
+    async function estimateSwap() {
+      const v = document.getElementById('inpSwap').value;
+      if (!v || +v <= 0 || !provider) {
+        document.getElementById('estDai').innerText = '--';
+        return;
+      }
+      try {
+        const price = await fetchLgnsPrice();
+        if (price === null) return;
+        document.getElementById('estDai').innerText = parseFloat(Number(v) * Number(price)).toFixed(4);
+        const SLIPPAGE_BPS = 600;
+        st('success', `📊 市价: 1 LGNS = $${price.toFixed(4)} | 滑点: ${SLIPPAGE_BPS / 100}%`);
+      } catch (e) {
+        document.getElementById('estDai').innerText = '--';
+      }
+    }
+
+    /* ===== 断开连接 ===== */
+    function disconnect() {
+      provider = null; signer = null; addr = null;
+      document.getElementById('statusDot').classList.remove('connected');
+      document.getElementById('statusText').innerText = '未连接钱包 · 请切换到 Polygon';
+      document.getElementById('btnConnect').classList.remove('hidden');
+      document.getElementById('btnDisconnect').classList.add('hidden');
+      document.getElementById('tab3').disabled = true;
+      document.getElementById('balSLgns_').innerText = '--';
+      document.getElementById('balSLgns').innerText = '--';
+      document.getElementById('balLgns').innerText = '--';
+      document.getElementById('estDai').innerText = '--';
+      document.getElementById('lgnsPrice').innerText = '--';
+      document.getElementById('checkResult').innerText = '';
+      document.getElementById('btnCheckClaim').disabled = true;
+      document.getElementById('btnClaim').disabled = true;
+      document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('done', 'active') });
+      document.getElementById('tab1').classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById('content1').classList.add('active');
+      updateProgress(1);
+      st('', '');
+    }
+
+    /* ===== 自动连接 ===== */
+    async function autoConnect() {
+      if (!window.okxwallet) return;
+      try {
+        provider = new ethers.BrowserProvider(window.okxwallet);
+        const accounts = await provider.send('eth_accounts', []);
+        if (accounts.length === 0) return;
+        await checkChain();
+        signer = await provider.getSigner();
+        addr = await signer.getAddress();
+        onConnected();
+      } catch (e) { }
+    }
+    autoConnect();
+
+    async function doConnect() {
+      if (!window.okxwallet) return alert('未检测到 OKX 钱包');
+      try {
+        provider = new ethers.BrowserProvider(window.okxwallet);
+        await provider.send('eth_requestAccounts', []);
+        await checkChain();
+        signer = await provider.getSigner();
+        addr = await signer.getAddress();
+        onConnected();
+      } catch (e) { st('error', e.message) }
+    }
+
+    function onConnected() {
+      document.getElementById('statusDot').classList.add('connected');
+      document.getElementById('statusText').innerText = addr.slice(0, 6) + '...' + addr.slice(-4) + ' · Polygon ✓';
+      document.getElementById('btnConnect').classList.add('hidden');
+      document.getElementById('btnDisconnect').classList.remove('hidden');
+      document.getElementById('tab2').disabled = false;
+      document.getElementById('tab3').disabled = false;
+      document.getElementById('btnCheckClaim').disabled = false;
+      refBal();
+      fetchLgnsPrice();
+      st('success', '✅ 钱包已连接 · 请先检查 Claim');
+    }
+
+    /* ===== Tab1: 检查 Claim ===== */
+    async function checkClaim() {
+      if (!addr) return st('error', '请先连接钱包');
+      lock('btnCheckClaim', true);
+      try {
+        await checkChain();
+        const contract = new ethers.Contract(C.STAKING, ABI_STAKING, provider);
+        const info = await contract.warmupInfo(addr);
+        const deposit = info[0];
+        const expiry = info[2];
+        const el = document.getElementById('checkResult');
+        if (deposit > 0n) {
+          const epochData = await (new ethers.Contract(C.STAKING, ABI_STAKING, provider)).epoch();
+          const currentEpoch = Number(epochData[1]);
+          const canClaim = currentEpoch >= Number(expiry);
+          el.className = 'check-result available';
+          el.innerHTML = canClaim
+            ? '✅ 有 <b>' + ethers.formatUnits(deposit, 9) + '</b> sLGNS 可领取！'
+            : '⏳ 当前 Epoch <b>' + currentEpoch + '</b> / 需 Epoch <b>' + expiry + '</b>';
+          document.getElementById('btnClaim').disabled = !canClaim;
+        } else {
+          el.className = 'check-result none';
+          el.innerText = '暂无可领取的 sLGNS';
+          document.getElementById('btnClaim').disabled = true;
+        }
+      } catch (e) { st('error', '检查失败: ' + e.message) }
+      lock('btnCheckClaim', false);
+    }
+
+    async function doClaim() {
+      lock('btnClaim', true);
+      st('pending', '等待钱包确认 Claim 交易…');
+      try {
+        await checkChain();
+        const tx = await (new ethers.Contract(C.STAKING, ABI_STAKING, signer)).claim(addr);
+        st('pending', 'Claim 交易已提交，等待区块确认…');
+        await tx.wait();
+        st('success', '🎉 Claim 成功！sLGNS 已从 Staking 取出');
+        document.getElementById('tab1').classList.add('done');
+        document.getElementById('tab2').disabled = false;
+        switchTab(2);
+        refBal();
+      } catch (e) { st('error', 'Claim 失败: ' + e.message) }
+      lock('btnClaim', false);
+    }
+
+    /* ===== Tab2: 赎回 LGNS ===== */
+    async function doUnstake() {
+      const v = document.getElementById('inpUnstake').value;
+      if (!v || +v <= 0) return st('error', '请输入赎回数量');
+      lock('btnUnstake', true); st('pending', '等待钱包确认赎回…');
+      try {
+        await checkChain();
+        const allowC = await (new ethers.Contract(C.sLGNS, ABI_SWAP, signer)).approve(C.STAKING, ethers.parseUnits(v, 0));
+        st('pending', '授权 sLGNS 给 Staking…'); await allowC.wait();
+        st('pending', '✅ 授权完成，执行赎回…');
+        const tx = await (new ethers.Contract(C.STAKING, ABI_STAKING, signer)).unstake(ethers.parseUnits(v, 9), true, { gasLimit: 800000 });
+        st('pending', '赎回交易已提交，等待确认…'); await tx.wait();
+        st('success', '🎉 sLGNS → LGNS 赎回成功！');
+        document.getElementById('tab2').classList.add('done');
+        document.getElementById('tab3').disabled = false;
+        switchTab(3);
+        refBal();
+      } catch (e) { st('error', '赎回失败: ' + e.message) }
+      lock('btnUnstake', false);
+    }
+
+    /* ===== Tab3: LGNS → DAI ===== */
+    async function doSwap() {
+      const v = document.getElementById('inpSwap').value;
+      if (!v || +v <= 0) return st('error', '请输入兑换数量');
+      lock('btnSwap', true);
+      st('pending', '检查 LGNS 授权…');
+      try {
+        await checkChain();
+        const router  = new ethers.Contract(C.Router, ABI_SWAP, signer);
+        const tokenIn = new ethers.Contract(C.LGNS, ABI_SWAP, signer);
+        const allowC = new ethers.Contract(C.LGNS, ABI_LGNS, provider);
+        const allowance = await allowC.allowance(addr, C.Router);
+        const lgnsAmt = ethers.parseUnits(v, 9);
+        const deadline = Math.floor(Date.now() / 1000) + 300;
+        if (allowance < lgnsAmt) {
+          st('pending', '授权 LGNS 给 QuickSwap Router…');
+          const txApprove = await tokenIn.approve(C.Router, ethers.MaxUint256);
+          await txApprove.wait();
+          st('pending', '✅ 授权完成，开始兑换…');
+        } else {
+          st('pending', '✅ 授权充足，跳过 approve');
+        }
+        st('pending', '正在执行 Swap...');
+        const SLIPPAGE_BPS = 600;
+        const amounts = await router.getAmountsOut(lgnsAmt, [C.LGNS, C.DAI]);
+        const rawDai = amounts[1];
+        const minDai = rawDai * (10000n - BigInt(SLIPPAGE_BPS)) / 10000n;
+        document.getElementById('estDai').innerText = parseFloat(ethers.formatUnits(rawDai, 18)).toFixed(4);
+        st('pending',
+          `📊 预估: ${parseFloat(ethers.formatUnits(rawDai, 18)).toFixed(4)} DAI\n` +
+          `📉 滑点: ${SLIPPAGE_BPS / 100}%\n` +
+          `⏳ 等待钱包确认…`
+        );
+        const tx = await router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
+          lgnsAmt, minDai, [C.LGNS, C.DAI], addr, deadline
+        );
+        st('pending', '兑换交易中，等待区块确认…');
+        await tx.wait();
+        st('success', '🎉 LGNS → DAI 兑换成功！');
+        document.getElementById('tab3').classList.add('done');
+        refBal();
+        fetchLgnsPrice();
+      } catch (e) {
+        console.error(e);
+        st('error', '兑换失败: ' + e.message);
+      }
+      lock('btnSwap', false);
+    }
+  </script>
+</body>
+
+</html>
